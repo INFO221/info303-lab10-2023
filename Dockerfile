@@ -1,4 +1,5 @@
-# start with official Gradle base image
+###################### Build Stage ###################### 
+
 # Gradle 7, JDK 17, Ubuntu Jammy LTS Linux
 FROM gradle:7-jdk17-jammy as builder
 
@@ -29,7 +30,10 @@ VOLUME "/home/gradle/.gradle"
 # build the service
 RUN gradle --no-daemon --quiet installDist
 
-# Run stage - start with the much smaller JRE rather than JDK
+
+###################### Run Stage ###################### 
+
+# start with the much smaller JRE rather than JDK
 FROM eclipse-temurin:17-jre-jammy
 
 # copy the Gradle build output from the builder stage
@@ -38,7 +42,7 @@ COPY --from=builder /home/gradle/shopping/build/install /home/deployment
 # switch into the stand-alone service folder
 WORKDIR /home/deployment
 
-# limit the Java heap size, and set default port
+# limit the Java heap size
 ENV \
 	_JAVA_OPTIONS=-Xmx256M
 
