@@ -1,7 +1,7 @@
 ###################### Build Stage ###################### 
 
-# Gradle 7, JDK 17, Ubuntu Jammy LTS Linux
-FROM gradle:7-jdk17-jammy as builder
+# Gradle 8, Eclipse Temurin JDK 21, Ubuntu Jammy LTS Linux
+FROM gradle:8-jdk21-jammy as builder
 
 # run install tasks as root
 USER root
@@ -28,13 +28,13 @@ RUN git checkout --quiet release
 VOLUME "/home/gradle/.gradle"
 
 # build the service
-RUN gradle --no-daemon --quiet installDist
+RUN gradle -Dorg.gradle.welcome=never --no-daemon --quiet installDist
 
 
 ###################### Run Stage ###################### 
 
 # start with the much smaller JRE rather than JDK
-FROM eclipse-temurin:17-jre-jammy
+FROM eclipse-temurin:21-jre-jammy
 
 # copy the Gradle build output from the builder stage
 COPY --from=builder /home/gradle/shopping/build/install /home/deployment
